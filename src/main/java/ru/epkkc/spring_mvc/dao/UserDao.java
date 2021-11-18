@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserDao implements UserDaoInt{
+public class UserDao implements UserDaoInt {
 
     @PersistenceContext
     private EntityManager manager;
@@ -35,6 +35,7 @@ public class UserDao implements UserDaoInt{
         List<User> list = manager.createQuery("from User", User.class).getResultList();
         return list == null ? new ArrayList<User>() : list;
     }
+
     @Transactional
     @Override
     public void updateUser(User user) {

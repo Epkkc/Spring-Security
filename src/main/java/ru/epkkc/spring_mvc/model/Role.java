@@ -24,7 +24,7 @@ public class Role implements GrantedAuthority {
 
     @Enumerated(value = EnumType.STRING)
     @Column
-    private RolesEnum roleType;
+    private RolesEnum roleType = RolesEnum.USER;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private Set<User> users;
@@ -34,6 +34,11 @@ public class Role implements GrantedAuthority {
     }
 
     public Role() {
+    }
+
+    public Role(Long role_id, RolesEnum roleType) {
+        this.role_id = role_id;
+        this.roleType = roleType;
     }
 
     public RolesEnum getRoleType() {
@@ -50,9 +55,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return "Role{" +
-                ", roleType=" + roleType.name() +
-                '}';
+        return roleType.toString();
     }
 
     @Override

@@ -2,6 +2,8 @@ package ru.epkkc.spring_mvc.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Converter;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -36,7 +38,7 @@ public class User implements UserDetails {
     @Column
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -58,7 +60,7 @@ public class User implements UserDetails {
         this.isActive = isActive;
     }
 
-    public void updateState(User user){
+    public void updateState(User user) {
         this.name = user.getName();
         this.lastname = user.getLastname();
         this.yearOfBirth = user.getYearOfBirth();
@@ -67,6 +69,7 @@ public class User implements UserDetails {
         this.roles = user.getRoles();
         this.isActive = user.getIsActive();
     }
+
     @Override
     public String toString() {
         return "User{" +
