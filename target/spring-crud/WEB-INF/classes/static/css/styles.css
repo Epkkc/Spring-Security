@@ -1,0 +1,25 @@
+h2 {
+    color: green;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th{
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    padding: 5px 30px;
+}
+
+label {
+    position: absolute;
+    margin: 10px;
+}
+
+input {
+    position: absolute;
+    margin: 10px;
+    left: 20%;
+}
