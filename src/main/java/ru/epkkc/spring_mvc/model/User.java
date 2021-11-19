@@ -1,9 +1,6 @@
 package ru.epkkc.spring_mvc.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Converter;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -38,7 +35,7 @@ public class User implements UserDetails {
     @Column
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -61,13 +58,13 @@ public class User implements UserDetails {
     }
 
     public void updateState(User user) {
-        this.name = user.getName();
-        this.lastname = user.getLastname();
-        this.yearOfBirth = user.getYearOfBirth();
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.roles = user.getRoles();
-        this.isActive = user.getIsActive();
+        if (!user.getName().isEmpty()) this.name = user.getName();
+        if (!user.getLastname().isEmpty()) this.lastname = user.getLastname();
+        if (user.getYearOfBirth() > 0) this.yearOfBirth = user.getYearOfBirth();
+        if (!user.getUsername().isEmpty()) this.username = user.getUsername();
+        if (!user.getPassword().isEmpty()) this.password = user.getPassword();
+        if (!user.getRoles().isEmpty()) this.roles = user.getRoles();
+        if (user.getIsActive() != null) this.isActive = user.getIsActive();
     }
 
     @Override
@@ -140,7 +137,7 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public boolean getIsActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 

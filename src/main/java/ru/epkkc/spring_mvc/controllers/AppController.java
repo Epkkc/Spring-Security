@@ -20,6 +20,8 @@ import ru.epkkc.spring_mvc.model.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 public class AppController {
@@ -39,11 +41,9 @@ public class AppController {
         for (User user : allUsers) {
             System.out.println(user);
         }
-        List<Role> roles = new ArrayList<>(Arrays.asList(new Role(RolesEnum.USER), new Role( RolesEnum.ADMIN)));
-//        List<Role> roles = roleDao.getAllRoles();
+        List<Role> roles = roleDao.getAllRoles();
 
         User user = new User();
-//        user.getRoles().add(new Role());
         model.addAttribute("users_list", allUsers);
         model.addAttribute("user_add", user);
         model.addAttribute("user_update", user);
@@ -52,37 +52,53 @@ public class AppController {
     }
 
     @PostMapping("/admin")
-    public RedirectView addUser(@ModelAttribute(name = "user_add") User user){
-        userDao.addUser(user);
+    public RedirectView addUser(@ModelAttribute(name = "user_add") User user) {
+        userDao.addUser(findRolesInDB(user));
         return new RedirectView("http://localhost:8080/admin");
     }
 
     @PatchMapping("/admin")
-    public RedirectView patchUser(@ModelAttribute(name = "user_update") User user){
-        userDao.updateUser(user);
+    public RedirectView patchUser(@ModelAttribute(name = "user_update") User user) {
+        userDao.updateUser(findRolesInDB(user));
         return new RedirectView("http://localhost:8080/admin");
     }
 
     @DeleteMapping("/admin")
-    public RedirectView removeUser(@RequestParam(name = "user_id") Long id){
+    public RedirectView removeUser(@RequestParam(name = "user_id") Long id) {
         userDao.removeUserWithId(id);
         return new RedirectView("http://localhost:8080/admin");
     }
 
     @GetMapping("/user")
-    public String userPage(ModelMap model){
+    public String userPage(ModelMap model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        model.addAttribute("name",currentUser.getName());
-        model.addAttribute("lastname",currentUser.getLastname());
-        model.addAttribute("year_of_birth",currentUser.getYearOfBirth());
-        model.addAttribute("username",currentUser.getUsername());
-        model.addAttribute("password",currentUser.getPassword());
+        model.addAttribute("name", currentUser.getName());
+        model.addAttribute("lastname", currentUser.getLastname());
+        model.addAttribute("year_of_birth", currentUser.getYearOfBirth());
+        model.addAttribute("username", currentUser.getUsername());
+        model.addAttribute("password", currentUser.getPassword());
         return "user_page";
     }
 
     @GetMapping(value = "/login")
-    public String loginPage(){
+    public String loginPage() {
         return "login_page";
+    }
+
+    private User findRolesInDB(User user) {
+        user.setRoles(user.getRoles()
+                .stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+        if (!user.getRoles().isEmpty()) {
+            List<Role> dbRoles = new ArrayList<>();
+            for (Role role : user.getRoles()) {
+                Role role1 = roleDao.findRoleByRoleType(role.getRoleType());
+                dbRoles.add(role1);
+            }
+            user.setRoles(dbRoles);
+        }
+        return user;
     }
 
 }

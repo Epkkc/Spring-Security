@@ -173,6 +173,14 @@
             <div>
                 <p>Roles:</p>
                 <ul>
+                    <li>
+                        <input type="checkbox"
+                               th:field="*{roles}"
+                               th:value="0"
+                               th:checked="${true}"
+                               id="without_changes_patch">
+                        <label for="without_changes_patch">Without changes</label>
+                    </li>
                     <li th:each="role: ${allRoles}">
                         <input type="checkbox" id="role_select_patch"
                                th:field="*{roles}"
@@ -184,6 +192,7 @@
             <div>
                 <label for="select_is_active_patch">Is active:</label>
                 <select id="select_is_active_patch" th:field="*{isActive}">
+                    <option th:value="${null}" th:selected="${true}">Without changes</option>
                     <option th:value="${true}">True</option>
                     <option th:value="${false}">False</option>
                 </select>

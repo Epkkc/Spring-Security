@@ -39,7 +39,6 @@ public class UserDao implements UserDaoInt {
     @Transactional
     @Override
     public void updateUser(User user) {
-        System.out.println(user);
         User user1 = manager.find(User.class, user.getId());
         user1.updateState(user);
         manager.flush();

@@ -2,6 +2,7 @@ package ru.epkkc.spring_mvc.model;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,7 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table
@@ -26,8 +27,8 @@ public class Role implements GrantedAuthority {
     @Column
     private RolesEnum roleType = RolesEnum.USER;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-    private Set<User> users;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<User> users;
 
     public Role(RolesEnum roleType) {
         this.roleType = roleType;
@@ -41,6 +42,12 @@ public class Role implements GrantedAuthority {
         this.roleType = roleType;
     }
 
+    public Role(Long role_id, RolesEnum roleType, List<User> users) {
+        this.role_id = role_id;
+        this.roleType = roleType;
+        this.users = users;
+    }
+
     public RolesEnum getRoleType() {
         return roleType;
     }
@@ -51,6 +58,22 @@ public class Role implements GrantedAuthority {
 
     public Long getId() {
         return role_id;
+    }
+
+    public Long getRole_id() {
+        return role_id;
+    }
+
+    public void setRole_id(Long role_id) {
+        this.role_id = role_id;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     @Override
