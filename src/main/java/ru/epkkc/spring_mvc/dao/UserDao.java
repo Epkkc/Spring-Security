@@ -1,7 +1,6 @@
 package ru.epkkc.spring_mvc.dao;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.epkkc.spring_mvc.model.User;
 
 import javax.persistence.EntityManager;
@@ -17,7 +16,6 @@ public class UserDao implements UserDaoInt {
     @PersistenceContext
     private EntityManager manager;
 
-    @Transactional
     @Override
     public void addUser(User user) {
         manager.persist(user);
@@ -25,26 +23,26 @@ public class UserDao implements UserDaoInt {
 
     @Override
     public User getUserWithId(long id) {
-        TypedQuery<User> query = manager.createQuery("from User u where u.user_id = :id", User.class);
-        query.setParameter("id", id);
-        return query.getSingleResult();
+        return manager.find(User.class, id);
     }
+
 
     @Override
     public List<User> findAllUsers() {
         List<User> list = manager.createQuery("from User", User.class).getResultList();
+        for (User user : list) {
+            System.out.println(user);
+        }
         return list == null ? new ArrayList<User>() : list;
     }
 
-    @Transactional
+
     @Override
     public void updateUser(User user) {
-        User user1 = manager.find(User.class, user.getId());
-        user1.updateState(user);
-        manager.flush();
+        manager.merge(user);
     }
 
-    @Transactional
+
     @Override
     public void removeUserWithId(long id) {
         Query query = manager.createQuery("delete from User u where u.user_id = :id")

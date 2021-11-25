@@ -5606,14 +5606,16 @@ customer_id</ColNames>
       <DataType>bigint|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="1324" parent="385" name="FKcnrjdc801vcdj8n017nlriv61">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="1325" parent="385" name="FK7ir6hi5jr98lclgjgbyxafneu">
+    <index id="1324" parent="385" name="FK7ir6hi5jr98lclgjgbyxafneu">
       <ColNames>role_id</ColNames>
       <Type>btree</Type>
     </index>
+    <key id="1325" parent="385" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>user_id
+role_id</ColNames>
+      <Primary>1</Primary>
+    </key>
     <foreign-key id="1326" parent="385" name="FKcnrjdc801vcdj8n017nlriv61">
       <ColNames>user_id</ColNames>
       <RefTableName>user</RefTableName>

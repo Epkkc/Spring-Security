@@ -9,16 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.view.RedirectView;
-import ru.epkkc.spring_mvc.dao.RoleDaoInt;
-import ru.epkkc.spring_mvc.dao.UserDaoInt;
 import ru.epkkc.spring_mvc.model.Role;
-import ru.epkkc.spring_mvc.model.RolesEnum;
 import ru.epkkc.spring_mvc.model.User;
+import ru.epkkc.spring_mvc.services.RoleServiceInt;
+import ru.epkkc.spring_mvc.services.UserServiceInt;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -26,57 +25,53 @@ import java.util.stream.Collectors;
 @Controller
 public class AppController {
 
-    private final UserDaoInt userDao;
-    private final RoleDaoInt roleDao;
+    private final UserServiceInt userService;
+    private final RoleServiceInt roleService;
 
     @Autowired
-    public AppController(UserDaoInt dao, RoleDaoInt roleDao) {
-        this.userDao = dao;
-        this.roleDao = roleDao;
+    public AppController(UserServiceInt userService, RoleServiceInt roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/admin")
     public String usersTable(ModelMap model) {
-        List<User> allUsers = userDao.findAllUsers();
+        List<User> allUsers = userService.findAllUsers();
         for (User user : allUsers) {
             System.out.println(user);
         }
-        List<Role> roles = roleDao.getAllRoles();
+        List<Role> allRoles = roleService.getAllRoles();
 
         User user = new User();
         model.addAttribute("users_list", allUsers);
+        model.addAttribute("allRoles", allRoles);
         model.addAttribute("user_add", user);
         model.addAttribute("user_update", user);
-        model.addAttribute("allRoles", roles);
         return "users_table";
     }
 
-    @PostMapping("/admin")
-    public RedirectView addUser(@ModelAttribute(name = "user_add") User user) {
-        userDao.addUser(findRolesInDB(user));
-        return new RedirectView("http://localhost:8080/admin");
+    @PostMapping("/post_admin")
+    public String addUser(@ModelAttribute(name = "user_add") User user) {
+        userService.addUser(findRolesInDB(user));
+        return "redirect:/admin";
     }
 
-    @PatchMapping("/admin")
-    public RedirectView patchUser(@ModelAttribute(name = "user_update") User user) {
-        userDao.updateUser(findRolesInDB(user));
-        return new RedirectView("http://localhost:8080/admin");
+    @PutMapping("/put_admin")
+    public String patchUser(@ModelAttribute(name = "user_update") User user) {
+        userService.updateUser(findRolesInDB(user));
+        return "redirect:/admin";
     }
 
-    @DeleteMapping("/admin")
-    public RedirectView removeUser(@RequestParam(name = "user_id") Long id) {
-        userDao.removeUserWithId(id);
-        return new RedirectView("http://localhost:8080/admin");
+    @DeleteMapping("/delete_admin")
+    public String removeUser(@RequestParam(name = "user_id") Long id) {
+        userService.removeUserWithId(id);
+        return "redirect:/admin";
     }
 
     @GetMapping("/user")
     public String userPage(ModelMap model) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        model.addAttribute("name", currentUser.getName());
-        model.addAttribute("lastname", currentUser.getLastname());
-        model.addAttribute("year_of_birth", currentUser.getYearOfBirth());
-        model.addAttribute("username", currentUser.getUsername());
-        model.addAttribute("password", currentUser.getPassword());
+        model.addAttribute("current_user", currentUser);
         return "user_page";
     }
 
@@ -86,17 +81,17 @@ public class AppController {
     }
 
     private User findRolesInDB(User user) {
-        user.setRoles(user.getRoles()
+        user.setRoles(new HashSet<>(user.getRoles()
                 .stream()
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())));
         if (!user.getRoles().isEmpty()) {
             List<Role> dbRoles = new ArrayList<>();
             for (Role role : user.getRoles()) {
-                Role role1 = roleDao.findRoleByRoleType(role.getRoleType());
+                Role role1 = roleService.findRoleByRoleType(role.getRoleType());
                 dbRoles.add(role1);
             }
-            user.setRoles(dbRoles);
+            user.setRoles(new HashSet<>(dbRoles));
         }
         return user;
     }

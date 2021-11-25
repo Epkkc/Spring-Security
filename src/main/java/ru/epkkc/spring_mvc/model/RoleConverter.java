@@ -5,7 +5,6 @@ import org.springframework.core.convert.converter.Converter;
 
 public class RoleConverter implements Converter<String, Role> {
 
-
     @Override
     public Role convert(String s) {
         if (s.equals("0")){

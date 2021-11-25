@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table
@@ -27,8 +28,8 @@ public class Role implements GrantedAuthority {
     @Column
     private RolesEnum roleType = RolesEnum.USER;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<User> users;
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<User> users;
 
     public Role(RolesEnum roleType) {
         this.roleType = roleType;
@@ -42,7 +43,7 @@ public class Role implements GrantedAuthority {
         this.roleType = roleType;
     }
 
-    public Role(Long role_id, RolesEnum roleType, List<User> users) {
+    public Role(Long role_id, RolesEnum roleType, Set<User> users) {
         this.role_id = role_id;
         this.roleType = roleType;
         this.users = users;
@@ -68,11 +69,11 @@ public class Role implements GrantedAuthority {
         this.role_id = role_id;
     }
 
-    public List<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 

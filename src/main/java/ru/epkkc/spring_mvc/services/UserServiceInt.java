@@ -1,10 +1,11 @@
-package ru.epkkc.spring_mvc.dao;
+package ru.epkkc.spring_mvc.services;
 
+import ru.epkkc.spring_mvc.dao.UserDaoInt;
 import ru.epkkc.spring_mvc.model.User;
 
 import java.util.List;
 
-public interface UserDaoInt {
+public interface UserServiceInt {
 
     void addUser(User user);
 
@@ -17,5 +18,4 @@ public interface UserDaoInt {
     void removeUserWithId(long id);
 
     User findUserWithUsername(String username);
-
 }

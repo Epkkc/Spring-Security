@@ -1,7 +1,6 @@
 package ru.epkkc.spring_mvc.dao;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.epkkc.spring_mvc.model.Role;
 import ru.epkkc.spring_mvc.model.RolesEnum;
 
@@ -21,7 +20,6 @@ public class RoleDao implements RoleDaoInt {
         return manager.createQuery("from Role r", Role.class).getResultList();
     }
 
-    @Transactional
     @Override
     public void addRole(Role role) {
         manager.persist(role);

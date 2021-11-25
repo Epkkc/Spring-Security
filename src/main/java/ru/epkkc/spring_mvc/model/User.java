@@ -10,10 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -35,11 +37,12 @@ public class User implements UserDetails {
     @Column
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles = new ArrayList<>();
+    private Set<Role> roles = new HashSet<>();
 
     @Column
     private Boolean isActive = true;
@@ -47,7 +50,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String lastname, short yearOfBirth, List<Role> roles, String username, String password, boolean isActive) {
+    public User(String name, String lastname, short yearOfBirth, Set<Role> roles, String username, String password, boolean isActive) {
         this.name = name;
         this.lastname = lastname;
         this.yearOfBirth = yearOfBirth;
@@ -55,16 +58,6 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
         this.isActive = isActive;
-    }
-
-    public void updateState(User user) {
-        if (!user.getName().isEmpty()) this.name = user.getName();
-        if (!user.getLastname().isEmpty()) this.lastname = user.getLastname();
-        if (user.getYearOfBirth() > 0) this.yearOfBirth = user.getYearOfBirth();
-        if (!user.getUsername().isEmpty()) this.username = user.getUsername();
-        if (!user.getPassword().isEmpty()) this.password = user.getPassword();
-        if (!user.getRoles().isEmpty()) this.roles = user.getRoles();
-        if (user.getIsActive() != null) this.isActive = user.getIsActive();
     }
 
     @Override
@@ -129,11 +122,11 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
